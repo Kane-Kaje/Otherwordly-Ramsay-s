@@ -3,25 +3,39 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
     public static Player Instance { get; private set; }
+    Rigidbody rb;
+    [SerializeField] float groundCheckDistance = 0f;
 
+    /*    public event EventHandler<OnSelectedCounterChangedEventArgs> OnSelectedCounterChanged;
+        public class OnSelectedCounterChangedEventArgs : EventArgs
+        {
+            public ClearCounter selectedCounter;
+        }*/
 
-/*    public event EventHandler<OnSelectedCounterChangedEventArgs> OnSelectedCounterChanged;
-    public class OnSelectedCounterChangedEventArgs : EventArgs
-    {
-        public ClearCounter selectedCounter;
-    }*/
 
     [SerializeField] private float moveSpeed = 7f;
     [SerializeField] private GameInput gameInput;
     [SerializeField] private LayerMask countersLayerMask;
+    [SerializeField] private float jumpForce = 4f;
 
 
     private bool isWalking;
     private Vector3 lastInteractDirection;
+
+
+    private bool isOnGround
+    {
+        get
+        {
+            return Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, groundCheckDistance);
+        }
+    }
+
 
     private void Awake()
     {
@@ -35,6 +49,7 @@ public class Player : MonoBehaviour
     private void Start()
     {
         //gameInput.OnInteractAction += GameInput_OnInteractAction;
+        rb = GetComponent<Rigidbody>();
     }
 
 /*    private void GameInput_OnInteractAction(object sender, System.EventArgs e)
@@ -48,7 +63,7 @@ public class Player : MonoBehaviour
     private void Update()
     {
         HandleMovement();
-      //HandleInteractions();
+        //HandleInteractions();
     }
 
     /*private void HandleInteractions()
@@ -86,6 +101,7 @@ public class Player : MonoBehaviour
 
     private void HandleMovement()
     {
+        //WASD movement
         Vector2 inputVector = gameInput.GetMovementVectorNormalized();
 
         Vector3 moveDirection = new Vector3(inputVector.x, 0f, inputVector.y);
@@ -130,6 +146,22 @@ public class Player : MonoBehaviour
 
         float rotateSpeed = 13f;
         transform.forward = Vector3.Slerp(transform.forward, moveDirection, Time.deltaTime * rotateSpeed);
+
+        
+        
+        //Jump
+
+        float inputJump = gameInput.GetJumpInput();
+
+        if (isOnGround)
+        {
+            if (inputJump != 0)
+            {
+                Debug.Log("im jumping");
+                rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+                inputJump = 0;
+            }
+        }
     }
     public bool IsWalking()
     {
