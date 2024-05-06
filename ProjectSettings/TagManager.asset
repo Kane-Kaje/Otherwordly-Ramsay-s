@@ -3,7 +3,12 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - kitchen_counter
+  - stove
+  - trash_can
+  - tomato
+  - cabbage
   layers:
   - Default
   - TransparentFX
