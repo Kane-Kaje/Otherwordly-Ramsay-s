@@ -3,25 +3,28 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
     public static Player Instance { get; private set; }
+    [SerializeField] private Rigidbody PlayerBody;
 
-
-/*    public event EventHandler<OnSelectedCounterChangedEventArgs> OnSelectedCounterChanged;
-    public class OnSelectedCounterChangedEventArgs : EventArgs
-    {
-        public ClearCounter selectedCounter;
-    }*/
+    /*    public event EventHandler<OnSelectedCounterChangedEventArgs> OnSelectedCounterChanged;
+        public class OnSelectedCounterChangedEventArgs : EventArgs
+        {
+            public ClearCounter selectedCounter;
+        }*/
 
     [SerializeField] private float moveSpeed = 7f;
     [SerializeField] private GameInput gameInput;
     [SerializeField] private LayerMask countersLayerMask;
+    [SerializeField] private float jumpForce = 4f;  
 
-
+    private bool isOnGround = true;
     private bool isWalking;
     private Vector3 lastInteractDirection;
+
 
     private void Awake()
     {
@@ -35,6 +38,7 @@ public class Player : MonoBehaviour
     private void Start()
     {
         //gameInput.OnInteractAction += GameInput_OnInteractAction;
+        PlayerBody = GetComponent<Rigidbody>();
     }
 
 /*    private void GameInput_OnInteractAction(object sender, System.EventArgs e)
@@ -48,7 +52,7 @@ public class Player : MonoBehaviour
     private void Update()
     {
         HandleMovement();
-      //HandleInteractions();
+        //HandleInteractions();
     }
 
     /*private void HandleInteractions()
@@ -86,6 +90,7 @@ public class Player : MonoBehaviour
 
     private void HandleMovement()
     {
+        //WASD movement
         Vector2 inputVector = gameInput.GetMovementVectorNormalized();
 
         Vector3 moveDirection = new Vector3(inputVector.x, 0f, inputVector.y);
@@ -130,6 +135,23 @@ public class Player : MonoBehaviour
 
         float rotateSpeed = 13f;
         transform.forward = Vector3.Slerp(transform.forward, moveDirection, Time.deltaTime * rotateSpeed);
+
+
+
+        //Jump
+        if (Input.GetKeyDown(KeyCode.Space) && isOnGround == true)
+        {
+                PlayerBody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+                isOnGround = false;
+        }
+
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "Ground")
+        { 
+            isOnGround = true;
+        }
     }
     public bool IsWalking()
     {
