@@ -158,15 +158,13 @@ public class Player : MonoBehaviour
         return isWalking;
     }
 
-/*    private void SetSelectedCounter(ClearCounter selectedCounter)
-    {
-        this.selectedCounter = selectedCounter;
-
-        OnSelectedCounterChanged?.Invoke(this, new OnSelectedCounterChangedEventArgs
+    /*    private void SetSelectedCounter(ClearCounter selectedCounter)
         {
-            selectedCounter = selectedCounter
-        });
-    }*/
+            this.selectedCounter = selectedCounter;
 
-
+            OnSelectedCounterChanged?.Invoke(this, new OnSelectedCounterChangedEventArgs
+            {
+                selectedCounter = selectedCounter
+            });
+        }*/
 }
