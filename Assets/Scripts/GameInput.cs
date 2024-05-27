@@ -38,10 +38,4 @@ public class GameInput : MonoBehaviour
 
         return inputVector;
     }
-
-    public float GetJumpInput()
-    {
-        return playerInputActions.Player.Jump.ReadValue<float>();
-    }
-
 }

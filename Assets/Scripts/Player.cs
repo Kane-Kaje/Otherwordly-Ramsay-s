@@ -8,8 +8,7 @@ using UnityEngine.UI;
 public class Player : MonoBehaviour
 {
     public static Player Instance { get; private set; }
-    Rigidbody rb;
-    [SerializeField] float groundCheckDistance = 0f;
+    [SerializeField] private Rigidbody PlayerBody;
 
     /*    public event EventHandler<OnSelectedCounterChangedEventArgs> OnSelectedCounterChanged;
         public class OnSelectedCounterChangedEventArgs : EventArgs
@@ -17,24 +16,14 @@ public class Player : MonoBehaviour
             public ClearCounter selectedCounter;
         }*/
 
-
     [SerializeField] private float moveSpeed = 7f;
     [SerializeField] private GameInput gameInput;
     [SerializeField] private LayerMask countersLayerMask;
-    [SerializeField] private float jumpForce = 4f;
+    [SerializeField] private float jumpForce = 4f;  
 
-
+    private bool isOnGround = true;
     private bool isWalking;
     private Vector3 lastInteractDirection;
-
-
-    private bool isOnGround
-    {
-        get
-        {
-            return Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, groundCheckDistance);
-        }
-    }
 
 
     private void Awake()
@@ -49,7 +38,7 @@ public class Player : MonoBehaviour
     private void Start()
     {
         //gameInput.OnInteractAction += GameInput_OnInteractAction;
-        rb = GetComponent<Rigidbody>();
+        PlayerBody = GetComponent<Rigidbody>();
     }
 
 /*    private void GameInput_OnInteractAction(object sender, System.EventArgs e)
@@ -147,20 +136,21 @@ public class Player : MonoBehaviour
         float rotateSpeed = 13f;
         transform.forward = Vector3.Slerp(transform.forward, moveDirection, Time.deltaTime * rotateSpeed);
 
-        
-        
+
+
         //Jump
-
-        float inputJump = gameInput.GetJumpInput();
-
-        if (isOnGround)
+        if (Input.GetKeyDown(KeyCode.Space) && isOnGround == true)
         {
-            if (inputJump != 0)
-            {
-                Debug.Log("im jumping");
-                rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-                inputJump = 0;
-            }
+                PlayerBody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+                isOnGround = false;
+        }
+
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "Ground")
+        { 
+            isOnGround = true;
         }
     }
     public bool IsWalking()
